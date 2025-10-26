@@ -1,0 +1,30 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+*.obj
+*.exe
+*.dll
+*.pdb
+bin/
+obj/
+
+# Rider
+.idea/
+
+# .NET
+*.dbmdl
+*.bak
+*.DS_Store
+
+# User-specific files
+*.local
+
+# SQLite database
+*.db
+jbc.db
+
+#sensetive authentication info
+/appsettings.Development.json

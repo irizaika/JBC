@@ -1,0 +1,65 @@
+﻿-- ===============================
+-- 🚚 Partners
+-- ===============================
+INSERT INTO Partners (Id, CompanyName, ShortName, Address, Phone1, Status)
+VALUES
+(1, 'Amazon', 'AMZ', 'London, UK', '0123456789', 1),
+(2, 'DHL Logistics', 'DHL', 'Birmingham, UK', '0123456790', 1),
+(3, 'Hermes', 'HMS', 'Manchester, UK', '0789101112', 1);
+
+-- ===============================
+-- 📂 Job Categories
+-- ===============================
+INSERT INTO JobCategories (Id, Name, Hours, IsCustom)
+VALUES
+(1, 'Full Day', 8.0, 0),
+(2, 'Half Day', 4.0, 0),
+(3, 'Double Shift', 12.0, 0),
+(4, 'Custom', NULL, 1);
+
+-- ===============================
+-- 🛠 Roles
+-- ===============================
+INSERT INTO Roles (Id, RoleName)
+VALUES
+(1, 'Driver'),
+(2, 'Porter');
+
+-- ===============================
+-- 🚛 Job Types
+-- ===============================
+INSERT INTO JobTypes (Id, Name, JobCategoryId, Description, NumberOfPeople, NumberOfVans, PayRate)
+VALUES
+(1, 'Delivery', 1, 'Standard parcel delivery', 2, 1, 120.00),
+(2, 'Clearance', 1, 'House clearance job', 3, 1, 150.00),
+(3, 'Custom', 4, 'User custom job type', 1, 1, 0.00);
+
+-- ===============================
+-- 💰 Role Pay Rates Per Job Category
+-- ===============================
+INSERT INTO RoleRatesPerJobCategory (Id, JobCategoryId, RoleId, Pay)
+VALUES
+(1, 1, 1, 80.00),   -- Driver, Full Day
+(2, 1, 2, 60.00),   -- Porter, Full Day
+(3, 2, 1, 50.00),   -- Driver, Half Day
+(4, 2, 2, 40.00),   -- Porter, Half Day
+(5, 3, 1, 100.00),  -- Driver, Double Shift
+(6, 3, 2, 80.00);   -- Porter, Double Shift
+
+-- ===============================
+-- 🚐 Vans
+-- ===============================
+INSERT INTO Vans (Id, VanName, Plate, Status)
+VALUES
+(1, 'Transit 01', 'AB12 XYZ', 1),
+(2, 'Transit 02', 'CD34 XYZ', 1),
+(3, 'Luton Van', 'EF56 XYZ', 1);
+
+-- ===============================
+-- 👷 Contractors
+-- ===============================
+INSERT INTO Contractors (Id, Name, ShortName, Address, Phone, Email, BankAccount, Status, DayRate, RoleId)
+VALUES
+(1, 'John Carter', 'JC', 'London', '0700000001', 'john@mail.com', 'GB12345678', 1, 120.00, 1),
+(2, 'Alex Johnson', 'AJ', 'Leeds', '0700000002', 'alex@mail.com', 'GB23456789', 1, 100.00, 2),
+(3, 'Mike Rogers', 'MR', 'Manchester', '0700000003', 'mike@mail.com', 'GB34567890', 1, 100.00, 2);

@@ -1,0 +1,6 @@
+@JBC_HostAddress = http://localhost:5187
+
+GET {{JBC_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
