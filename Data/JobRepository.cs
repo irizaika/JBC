@@ -2,6 +2,8 @@
 using JBC.Models;
 using JBC.Models.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace JBC.Data
 {
@@ -53,5 +55,36 @@ namespace JBC.Data
                 .Include(j => j.JobType)
                 .FirstOrDefaultAsync(j => j.Id == id);
         }
+
+        public async Task<List<PartnerJobSummaryDto>> PartnerJobSummary(DateOnly startDate, DateOnly endDate)
+        {
+            var query = await _context.Jobs
+                .Where(j => j.Date >= startDate && j.Date <= endDate)
+                .GroupBy(j => new
+                {
+                    j.PartnerId,
+                    PartnerName = j.Partner != null ? j.Partner.CompanyName : null,
+                    j.CustomerName,
+                    j.Count
+                })
+                .Select(g => new PartnerJobSummaryDto
+                {
+                    PartnerId = g.Key.PartnerId ?? 0,
+                    PartnerName =
+                        (!string.IsNullOrEmpty(g.Key.PartnerName)
+                            ? g.Key.PartnerName
+                            : !string.IsNullOrEmpty(g.Key.CustomerName)
+                                ? g.Key.CustomerName
+                                : "Unassigned"),   // handles nulls in both
+                    TotalJobs = (double)g.Sum(x=>x.Count),
+                    TotalPayReceived = g.Sum(x => x.PayReceived),
+                    TotalContractorCost = g.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay)),
+                })
+                .OrderByDescending(r => r.TotalJobs)
+                .ToListAsync();
+
+            return query;
+        }
+
     }
 }

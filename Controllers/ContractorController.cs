@@ -24,6 +24,26 @@ namespace JBC.Controllers
         {
             var contractors = await _unitOfWork.Contractors.GetAllAsync();
             var contractorDtos = _mapper.Map<IEnumerable<ContractorDto>>(contractors);
+
+            // Load all rates once
+            var allRoleRates = await _unitOfWork.RoleRatePerJobCategory
+                .GetAllAsync();
+
+            var allContractorRates = await _unitOfWork.PersonRatesPerJobType
+                .GetAllAsync();
+
+            // Populate dictionaries
+            foreach (var dto in contractorDtos)
+            {
+                dto.RoleRates = allRoleRates
+                    .Where(r => r.RoleId == dto.RoleId)
+                    .ToDictionary(r => r.JobCategoryId, r => r.Pay);
+
+                dto.ContractorRates = allContractorRates
+                    .Where(c => c.ContractorId == dto.Id)
+                    .ToDictionary(c => c.JobTypeId, c => c.Pay);
+            }
+
             return Ok(contractorDtos);
         }
 
@@ -33,7 +53,7 @@ namespace JBC.Controllers
             var contractor = await _unitOfWork.Contractors.GetByIdAsync(id);
             if (contractor == null) return NotFound();
             var contractorDto = _mapper.Map<ContractorDto>(contractor);
-            return contractorDto;
+            return contractorDto; 
         }
 
         [HttpPost]

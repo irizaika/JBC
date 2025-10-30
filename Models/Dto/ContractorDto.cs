@@ -23,5 +23,9 @@ namespace JBC.Models.Dto
         public decimal DayRate { get; set; } = 0;
 
         public int RoleId { get; set; }
+
+        public Dictionary<int, decimal> RoleRates { get; set; } = new();
+        public Dictionary<int, decimal> ContractorRates { get; set; } = new();
+
     }
 }
