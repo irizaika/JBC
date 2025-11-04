@@ -15,10 +15,26 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet("partner-summary")]
-    public async Task<ActionResult<IEnumerable<PartnerJobSummaryDto>>> GetPartnerSummary(DateOnly startDate, DateOnly endDate)
+    public async Task<ActionResult<IEnumerable<PartnerJobSummaryDto>>> GetPartnerSummary(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
     {
-        var query = await _context.Jobs.PartnerJobSummary(startDate, endDate);
+        var query = await _context.Jobs.PartnerJobSummary(startDate, endDate, combineNoPartner);
 
         return Ok(query);
     }
+
+    [HttpGet("contractors")]
+    public async Task<ActionResult<IEnumerable<PartnerJobSummaryDto>>> GetContractorReport(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
+    {
+        var query = await _context.Jobs.GetContractorReportAsync(startDate, endDate, combineNoPartner);
+
+        return Ok(query);
+    }
+
+    [HttpGet("vans")]
+    public async Task<IActionResult> GetVanReport(DateOnly startDate, DateOnly endDate)
+        => Ok(await _context.Jobs.GetVanReportAsync(startDate, endDate));
+
+    [HttpGet("jobs")]
+    public async Task<IActionResult> GetJobSummaryReport(DateOnly startDate, DateOnly endDate)
+        => Ok(await _context.Jobs.GetJobSummaryReportAsync(startDate, endDate));
 }

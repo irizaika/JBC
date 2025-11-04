@@ -1,4 +1,6 @@
-﻿namespace JBC.Models.Dto
+﻿using System.Globalization;
+
+namespace JBC.Models.Dto
 {
     public class PartnerJobSummaryDto
     {
@@ -10,4 +12,5 @@
         public decimal Profit => TotalPayReceived - TotalContractorCost;
         public decimal AvgPayPerJob => TotalJobs > 0 ? (decimal)TotalPayReceived / (decimal)TotalJobs : 0;
     }
+
 }

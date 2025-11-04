@@ -47,6 +47,8 @@ builder.Services.AddAutoMapper(config =>
                     opt => opt.MapFrom(src => src.JobVans != null
                         ? src.JobVans.Select(jv => jv.VanId/*, VanName = jv.Van.VanName*/).ToList()
                         : Enumerable.Empty<int>()))
+                .ForMember(dest => dest.CustomerName, 
+                    opt => opt.MapFrom(src => string.IsNullOrEmpty(src.CustomerName) ? null : src.CustomerName))
                 .ReverseMap()
                 .ForMember(dest => dest.JobContractors, opt => opt.MapFrom(src =>
                     src.Contractors != null

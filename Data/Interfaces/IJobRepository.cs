@@ -9,6 +9,9 @@ namespace JBC.Data.Interfaces
         Task<List<Job>> GetJobsInRangeAsync(DateOnly start, DateOnly end);
         Task<List<Job>> GetDayJobsAsync(DateOnly day);
         Task<Job?> GetJobsWithRelationsAsync(int id);
-        Task<List<PartnerJobSummaryDto>> PartnerJobSummary(DateOnly startDate, DateOnly endDate);
+        Task<List<PartnerJobSummaryDto>> PartnerJobSummary(DateOnly startDate, DateOnly endDate, bool combineNoPartner);
+        Task<List<ContractorReportDto>> GetContractorReportAsync(DateOnly startDate, DateOnly endDate, bool combineNoPartner);
+        Task<List<VanReportDto>> GetVanReportAsync(DateOnly startDate, DateOnly endDate);
+        Task<List<JobSummaryReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate);
     }
 }
