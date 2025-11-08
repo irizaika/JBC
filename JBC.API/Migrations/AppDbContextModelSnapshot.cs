@@ -17,7 +17,7 @@ namespace JBC.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("JBC.Models.Contractor", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Contractor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace JBC.Migrations
                     b.ToTable("Contractors");
                 });
 
-            modelBuilder.Entity("JBC.Models.ContractorsRate", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.ContractorsRate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace JBC.Migrations
                     b.ToTable("ContractorRates");
                 });
 
-            modelBuilder.Entity("JBC.Models.Job", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -133,7 +133,7 @@ namespace JBC.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobCategory", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -157,7 +157,7 @@ namespace JBC.Migrations
                     b.ToTable("JobCategories");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobContractor", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobContractor", b =>
                 {
                     b.Property<int>("JobId")
                         .HasColumnType("INTEGER");
@@ -175,7 +175,7 @@ namespace JBC.Migrations
                     b.ToTable("JobContractors");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobType", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,7 +216,7 @@ namespace JBC.Migrations
                     b.ToTable("JobTypes");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobVan", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobVan", b =>
                 {
                     b.Property<int>("JobId")
                         .HasColumnType("INTEGER");
@@ -231,7 +231,7 @@ namespace JBC.Migrations
                     b.ToTable("JobVans");
                 });
 
-            modelBuilder.Entity("JBC.Models.Partner", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Partner", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -275,7 +275,7 @@ namespace JBC.Migrations
                     b.ToTable("Partners");
                 });
 
-            modelBuilder.Entity("JBC.Models.PartnersRate", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.PartnersRate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -299,7 +299,7 @@ namespace JBC.Migrations
                     b.ToTable("PartnersRates");
                 });
 
-            modelBuilder.Entity("JBC.Models.PersonPayRatePerJobType", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.PersonPayRatePerJobType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -323,7 +323,7 @@ namespace JBC.Migrations
                     b.ToTable("ContractorRatesPErJobType");
                 });
 
-            modelBuilder.Entity("JBC.Models.Role", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -341,7 +341,7 @@ namespace JBC.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("JBC.Models.RolePayRatePerJobCategory", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.RolePayRatePerJobCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -365,7 +365,7 @@ namespace JBC.Migrations
                     b.ToTable("RoleRatesPerJobCategory");
                 });
 
-            modelBuilder.Entity("JBC.Models.Van", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Van", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -396,9 +396,9 @@ namespace JBC.Migrations
                     b.ToTable("Vans");
                 });
 
-            modelBuilder.Entity("JBC.Models.Contractor", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Contractor", b =>
                 {
-                    b.HasOne("JBC.Models.Role", "Role")
+                    b.HasOne("JBC.Domain.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -407,15 +407,15 @@ namespace JBC.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("JBC.Models.ContractorsRate", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.ContractorsRate", b =>
                 {
-                    b.HasOne("JBC.Models.Contractor", "Contractor")
+                    b.HasOne("JBC.Domain.Entities.Contractor", "Contractor")
                         .WithMany()
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JBC.Models.JobType", "JobType")
+                    b.HasOne("JBC.Domain.Entities.JobType", "JobType")
                         .WithMany()
                         .HasForeignKey("JobTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -426,13 +426,13 @@ namespace JBC.Migrations
                     b.Navigation("JobType");
                 });
 
-            modelBuilder.Entity("JBC.Models.Job", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Job", b =>
                 {
-                    b.HasOne("JBC.Models.JobType", "JobType")
+                    b.HasOne("JBC.Domain.Entities.JobType", "JobType")
                         .WithMany()
                         .HasForeignKey("JobTypeId");
 
-                    b.HasOne("JBC.Models.Partner", "Partner")
+                    b.HasOne("JBC.Domain.Entities.Partner", "Partner")
                         .WithMany()
                         .HasForeignKey("PartnerId");
 
@@ -441,15 +441,15 @@ namespace JBC.Migrations
                     b.Navigation("Partner");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobContractor", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobContractor", b =>
                 {
-                    b.HasOne("JBC.Models.Contractor", "Contractor")
+                    b.HasOne("JBC.Domain.Entities.Contractor", "Contractor")
                         .WithMany()
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JBC.Models.Job", "Job")
+                    b.HasOne("JBC.Domain.Entities.Job", "Job")
                         .WithMany("JobContractors")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,13 +460,13 @@ namespace JBC.Migrations
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobType", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobType", b =>
                 {
-                    b.HasOne("JBC.Models.JobCategory", "JobCategory")
+                    b.HasOne("JBC.Domain.Entities.JobCategory", "JobCategory")
                         .WithMany()
                         .HasForeignKey("JobCategoryId");
 
-                    b.HasOne("JBC.Models.Partner", "Partner")
+                    b.HasOne("JBC.Domain.Entities.Partner", "Partner")
                         .WithMany()
                         .HasForeignKey("PartnerId");
 
@@ -475,15 +475,15 @@ namespace JBC.Migrations
                     b.Navigation("Partner");
                 });
 
-            modelBuilder.Entity("JBC.Models.JobVan", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.JobVan", b =>
                 {
-                    b.HasOne("JBC.Models.Job", "Job")
+                    b.HasOne("JBC.Domain.Entities.Job", "Job")
                         .WithMany("JobVans")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JBC.Models.Van", "Van")
+                    b.HasOne("JBC.Domain.Entities.Van", "Van")
                         .WithMany()
                         .HasForeignKey("VanId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -494,15 +494,15 @@ namespace JBC.Migrations
                     b.Navigation("Van");
                 });
 
-            modelBuilder.Entity("JBC.Models.PersonPayRatePerJobType", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.PersonPayRatePerJobType", b =>
                 {
-                    b.HasOne("JBC.Models.Contractor", "Contractor")
+                    b.HasOne("JBC.Domain.Entities.Contractor", "Contractor")
                         .WithMany()
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JBC.Models.JobType", "JobType")
+                    b.HasOne("JBC.Domain.Entities.JobType", "JobType")
                         .WithMany()
                         .HasForeignKey("JobTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -513,15 +513,15 @@ namespace JBC.Migrations
                     b.Navigation("JobType");
                 });
 
-            modelBuilder.Entity("JBC.Models.RolePayRatePerJobCategory", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.RolePayRatePerJobCategory", b =>
                 {
-                    b.HasOne("JBC.Models.JobCategory", "JobCategory")
+                    b.HasOne("JBC.Domain.Entities.JobCategory", "JobCategory")
                         .WithMany()
                         .HasForeignKey("JobCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JBC.Models.Role", "Role")
+                    b.HasOne("JBC.Domain.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -532,7 +532,7 @@ namespace JBC.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("JBC.Models.Job", b =>
+            modelBuilder.Entity("JBC.Domain.Entities.Job", b =>
                 {
                     b.Navigation("JobContractors");
 

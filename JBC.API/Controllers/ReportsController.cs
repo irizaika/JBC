@@ -1,6 +1,6 @@
 ﻿using JBC.Data;
 using JBC.Data.Interfaces;
-using JBC.Models.Dto;
+using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

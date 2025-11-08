@@ -1,4 +1,4 @@
-﻿using JBC.Models;
+﻿using JBC.Domain.Entities;
 
 namespace JBC.Data.Interfaces
 {

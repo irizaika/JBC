@@ -1,6 +1,6 @@
-﻿using JBC.Data;
+﻿using JBC.Domain.Enum;
 
-namespace JBC.Models.Dto
+namespace JBC.Domain.Dto
 {
     public class ContractorDto
     {

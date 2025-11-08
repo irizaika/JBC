@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace JBC.Models
+namespace JBC.Domain.Entities
 {
     [Index(nameof(ContractorId))]
     [Index(nameof(JobTypeId))]

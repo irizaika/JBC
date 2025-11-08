@@ -1,4 +1,4 @@
-﻿namespace JBC.Data
+﻿namespace JBC.Domain.Enum
 {
     public class Constants
     {

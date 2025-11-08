@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace JBC.Models
+namespace JBC.Domain.Entities
 {
     [Index(nameof(RoleName))]
     public class Role

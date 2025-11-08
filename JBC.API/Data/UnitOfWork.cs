@@ -1,5 +1,5 @@
 ﻿using JBC.Data.Interfaces;
-using JBC.Models;
+using JBC.Domain.Entities;
 
 namespace JBC.Data
 {

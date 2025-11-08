@@ -1,4 +1,4 @@
-﻿using JBC.Models;
+﻿using JBC.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 

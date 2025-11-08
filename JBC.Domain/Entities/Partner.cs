@@ -1,9 +1,9 @@
-﻿using JBC.Data;
+﻿using JBC.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace JBC.Models
+namespace JBC.Domain.Entities
 {
     [Index(nameof(CompanyName))]
     [Index(nameof(Status))]

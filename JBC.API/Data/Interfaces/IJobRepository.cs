@@ -1,6 +1,6 @@
 ﻿using JBC.Data.Interfaces;
-using JBC.Models;
-using JBC.Models.Dto;
+using JBC.Domain.Entities;
+using JBC.Domain.Dto;
 
 namespace JBC.Data.Interfaces
 {

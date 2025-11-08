@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using JBC.Data;
 using JBC.Data.Interfaces;
-using JBC.Models;
-using JBC.Models.Dto;
+using JBC.Domain.Entities;
+using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JBC.Controllers

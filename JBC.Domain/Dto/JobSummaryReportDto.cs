@@ -1,4 +1,4 @@
-﻿namespace JBC.Models.Dto
+﻿namespace JBC.Domain.Dto
 {
     public class JobSummaryReportDto
     {
