@@ -1,4 +1,4 @@
-﻿namespace JBC.Models
+﻿namespace JBC.Models.Dto
 {
 
     public class JobCategoryDto

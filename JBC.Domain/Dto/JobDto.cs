@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace JBC.Models.Dto
+﻿namespace JBC.Models.Dto
 {
     //    public class JobDto
     //    {

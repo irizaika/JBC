@@ -16,6 +16,7 @@ namespace JBC.Data
         }
 
         public async Task<List<T>> GetAllAsync() => await _dbSet.ToListAsync();
+
         public async Task<int> GetCountAsync() => await _dbSet.CountAsync();
 
         public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);

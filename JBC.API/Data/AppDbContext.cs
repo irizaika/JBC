@@ -20,10 +20,9 @@ namespace JBC.Data
         public DbSet<Contractor> Contractors { get; set; }
         public DbSet<ContractorsRate> ContractorRates { get; set; }
         public DbSet<RolePayRatePerJobCategory> RoleRatesPerJobCategory { get; set; }
-        public DbSet<PersonPayRatePerJobType> ContractorRatesPErJobType { get; set; }
-    
+        public DbSet<PersonPayRatePerJobType> ContractorRatesPErJobType { get; set; }  
 
-     protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
