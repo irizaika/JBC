@@ -1,11 +1,11 @@
+using JBC.Application.Interfaces;
+using JBC.Application.Interfaces.CrudInterfaces;
+using JBC.Application.Services;
+using JBC.Domain.Dto;
+using JBC.Domain.Entities;
 using JBC.Domain.Enum;
 using JBC.Infrastructure.Data;
-using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
-using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
-using JBC.Application.Services;
-using JBC.Application.Intefraces.CrudInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,14 +37,13 @@ builder.Services.AddScoped<IRolePayService, RolePayService>();
 builder.Services.AddScoped<IGenericRepository<Van>, GenericRepository<Van>>();
 builder.Services.AddScoped<IVanService, VanService>();
 
-
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Register UnitOfWork (scoped per request)
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 
-
-
-//builder.Services.AddScoped<IVanService, VanService>();
 
 //builder.Services.AddAutoMapper(typeof(Program)); // Scans all profiles in the assembly
 builder.Services.AddAutoMapper(config =>

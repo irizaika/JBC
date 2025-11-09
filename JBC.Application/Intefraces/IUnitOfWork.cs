@@ -1,5 +1,4 @@
-﻿using JBC.Application.Intefraces.CrudInterfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Domain.Entities;
 
 namespace JBC.Application.Interfaces
 {

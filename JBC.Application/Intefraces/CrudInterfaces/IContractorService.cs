@@ -1,6 +1,6 @@
 ﻿using JBC.Domain.Dto;
 
-namespace JBC.Application.Intefraces.CrudInterfaces
+namespace JBC.Application.Interfaces.CrudInterfaces
 {
     public interface IContractorService : ICrudService<ContractorDto>
     {

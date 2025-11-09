@@ -1,39 +1,33 @@
-﻿using JBC.Application.Interfaces;
-using JBC.Domain.Dto;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using JBC.Application.Interfaces;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ReportsController : ControllerBase
+namespace JBC.API.Controllers
 {
-    private readonly IUnitOfWork _context;
-
-    public ReportsController(IUnitOfWork context)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ReportsController : ControllerBase
     {
-        _context = context;
+        private readonly IReportService _reportService;
+
+        public ReportsController(IReportService reportService)
+        {
+            _reportService = reportService;
+        }
+
+        [HttpGet("partner-summary")]
+        public async Task<IActionResult> GetPartnerSummary(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
+            => Ok(await _reportService.GetPartnerSummaryAsync(startDate, endDate, combineNoPartner));
+
+        [HttpGet("contractors")]
+        public async Task<IActionResult> GetContractorReport(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
+            => Ok(await _reportService.GetContractorReportAsync(startDate, endDate, combineNoPartner));
+
+        //[HttpGet("vans")]
+        //public async Task<IActionResult> GetVanReport(DateOnly startDate, DateOnly endDate)
+        //    => Ok(await _context.Jobs.GetVanReportAsync(startDate, endDate));
+
+        //[HttpGet("jobs")]
+        //public async Task<IActionResult> GetJobSummaryReport(DateOnly startDate, DateOnly endDate)
+        //    => Ok(await _context.Jobs.GetJobSummaryReportAsync(startDate, endDate));
     }
-
-    [HttpGet("partner-summary")]
-    public async Task<ActionResult<IEnumerable<PartnerJobSummaryDto>>> GetPartnerSummary(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
-    {
-        var query = await _context.Jobs.PartnerJobSummary(startDate, endDate, combineNoPartner);
-
-        return Ok(query);
-    }
-
-    [HttpGet("contractors")]
-    public async Task<ActionResult<IEnumerable<PartnerJobSummaryDto>>> GetContractorReport(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
-    {
-        var query = await _context.Jobs.GetContractorReportAsync(startDate, endDate, combineNoPartner);
-
-        return Ok(query);
-    }
-
-    [HttpGet("vans")]
-    public async Task<IActionResult> GetVanReport(DateOnly startDate, DateOnly endDate)
-        => Ok(await _context.Jobs.GetVanReportAsync(startDate, endDate));
-
-    [HttpGet("jobs")]
-    public async Task<IActionResult> GetJobSummaryReport(DateOnly startDate, DateOnly endDate)
-        => Ok(await _context.Jobs.GetJobSummaryReportAsync(startDate, endDate));
 }

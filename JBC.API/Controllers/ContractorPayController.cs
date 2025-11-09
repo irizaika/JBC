@@ -1,4 +1,4 @@
-﻿using JBC.Application.Intefraces.CrudInterfaces;
+﻿using JBC.Application.Interfaces.CrudInterfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,160 +1,57 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Application.Interfaces;
+using JBC.Application.Interfaces.CrudInterfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JBC.Controllers
+namespace JBC.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class JobController : ControllerBase
     {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
+        private readonly IJobService _jobService;
 
-        public JobController(IUnitOfWork uow, IMapper mapper)
+        public JobController(IJobService jobService)
         {
-            _uow = uow;
-            _mapper = mapper;
+            _jobService = jobService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobDto>>> GetAll()
-        {
-            var jobs = await _uow.Jobs.GetAllAsync();
-            var jobDtos = _mapper.Map<IEnumerable<JobDto>>(jobs);
-            return Ok(jobDtos);
-        }
+        public async Task<IActionResult> GetAll() => Ok(await _jobService.GetAllAsync());
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobDto>> GetJobById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-           // var job = await _uow.Jobs.GetByIdAsync(id);
-            var job = await _uow.Jobs.GetJobsWithRelationsAsync(id);
-
-            if (job == null) return NotFound();
-            var jobDto = _mapper.Map<JobDto>(job);
-            return Ok(jobDto);
+            var job = await _jobService.GetByIdAsync(id);
+            return job == null ? NotFound() : Ok(job);
         }
-
-        //[HttpGet("range")]
-        //public async Task<ActionResult<IEnumerable<JobDto>>> GetInRange(DateTime start, DateTime end)
-        //{
-        //    var temp = await _uow.Jobs.GetJobsInRangeAsync(start, end);
-        //   // if (temp == null || !temp.Any()) return NotFound();
-        //    var mapped = _mapper.Map<List<JobDto>>(temp);
-        //    return  Ok(mapped);
-        //}
 
         [HttpGet("range")]
-        public async Task<ActionResult<IEnumerable<object>>> GetInRange(DateOnly start, DateOnly end)
-        {
-            // Fetch jobs in range
-            var jobs = await _uow.Jobs.GetJobsInRangeAsync(start, end);
-            var mappedJobs = _mapper.Map<List<JobDto>>(jobs);
-
-            // Group jobs by date (assuming JobDto has a Date property)
-            var jobsByDate = mappedJobs
-                .GroupBy(j => j.Date)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
-            // Create a list covering every day in range
-            var result = new List<object>();
-            for (var date = start; date <= end; date = date.AddDays(1))
-            {
-                result.Add(new
-                {
-                    Date = date,
-                    Jobs = jobsByDate.ContainsKey(date) ? jobsByDate[date] : new List<JobDto>()
-                });
-            }
-
-            return Ok(result);
-        }
-
+        public async Task<IActionResult> GetRange(DateOnly start, DateOnly end)
+            => Ok(await _jobService.GetJobsInRangeAsync(start, end));
 
         [HttpGet("day/{day}")]
-        public async Task<ActionResult<IEnumerable<JobDto>>> GetDay(DateOnly day)
-        {
-            var temp = await _uow.Jobs.GetDayJobsAsync(day);
-          //  if (temp == null || !temp.Any()) return NotFound();
-            var mapped = _mapper.Map<List<JobDto>>(temp);
-            return Ok(mapped);
-        }
+        public async Task<IActionResult> GetDay(DateOnly day)
+            => Ok(await _jobService.GetDayJobsAsync(day));
 
         [HttpPost]
-        public async Task<ActionResult<JobDto>> Create(JobDto jobDto)
+        public async Task<IActionResult> Create(JobDto jobDto)
         {
-
-            var job = _mapper.Map<Job>(jobDto);
-
-            await _uow.Jobs.AddAsync(job);
-            await _uow.SaveAsync();
-
-            var createdJobDto = _mapper.Map<JobDto>(job);
-
-            return CreatedAtAction(nameof(GetJobById), new { id = job.Id }, createdJobDto);
+            var created = await _jobService.CreateAsync(jobDto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, JobDto jobDto)
         {
-            //var updated = _mapper.Map<Job>(jobDto);
-            //if (id != updated.Id) return BadRequest();
-
-            ////var job = await _uow.Jobs.GetByIdAsync(id);
-            //var job = await _uow.Jobs.GetJobsWithRelationsAsync(id);
-
-            //_uow.Jobs.Update(job);
-            //await _uow.SaveAsync();
-            //return NoContent();
-
-            if (id != jobDto.Id) return BadRequest("ID mismatch");
-
-            // 1. Load existing job with relations
-            var job = await _uow.Jobs.GetJobsWithRelationsAsync(id);
-            if (job == null) return NotFound();
-
-            // 2. Map updated simple fields from DTO → existing entity
-            _mapper.Map(jobDto, job);
-
-            // 3. Update Many-to-Many relationships manually
-
-            // --- Contractors ---
-            job.JobContractors.Clear();
-            if (jobDto.Contractors != null)
-            {
-                job.JobContractors = jobDto.Contractors
-                    .Select(c => new JobContractor { JobId = id, ContractorId = c.ContractorId, Pay = c.Pay})
-                    .ToList();
-            }
-
-            // --- Vans ---
-            job.JobVans.Clear();
-            if (jobDto.Vans != null)
-            {
-                job.JobVans = jobDto.Vans
-                    .Select(vId => new JobVan { JobId = id, VanId = vId })
-                    .ToList();
-            }
-
-            await _uow.SaveAsync();
-
-
-            var updatedJobDto = _mapper.Map<JobDto>(job);
-
-            return Ok(updatedJobDto);
-            //return NoContent();
+            var updated = await _jobService.UpdateJobAsync(id, jobDto);
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var job = await _uow.Jobs.GetByIdAsync(id);
-            if (job == null) return NotFound();
-            _uow.Jobs.Remove(job);
-            await _uow.SaveAsync();
+            await _jobService.DeleteAsync(id);
             return NoContent();
         }
     }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using JBC.Application.Intefraces;
 using JBC.Application.Interfaces;
 
 namespace JBC.Application.Services

@@ -2,7 +2,7 @@
 using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using JBC.Application.Intefraces.CrudInterfaces;
+using JBC.Application.Interfaces;
 
 namespace JBC.Infrastructure.Data
 {
@@ -191,55 +191,55 @@ namespace JBC.Infrastructure.Data
         }
 
 
-        // ===========================
-        // VAN REPORT
-        // ===========================
-        public async Task<List<VanReportDto>> GetVanReportAsync(DateOnly startDate, DateOnly endDate)
-        {
-            var report = await _context.JobVans
-                .Include(jv => jv.Job)
-                .Include(jv => jv.Van)
-                .Where(jv => jv.Job.Date >= startDate && jv.Job.Date <= endDate)
-                .GroupBy(jv => new
-                {
-                    jv.VanId,
-                    jv.Van.VanName
-                })
-                .Select(g => new VanReportDto
-                {
-                    VanId = g.Key.VanId,
-                    VanName = g.Key.VanName,
-                    TotalJobs = g.Count(),
-                    FirstJobDate = g.Min(x => x.Job.Date.ToDateTime(TimeOnly.MinValue)),
-                    LastJobDate = g.Max(x => x.Job.Date.ToDateTime(TimeOnly.MinValue))
-                })
-                .OrderByDescending(r => r.TotalJobs)
-                .ToListAsync();
+        //// ===========================
+        //// VAN REPORT
+        //// ===========================
+        //public async Task<List<VanReportDto>> GetVanReportAsync(DateOnly startDate, DateOnly endDate)
+        //{
+        //    var report = await _context.JobVans
+        //        .Include(jv => jv.Job)
+        //        .Include(jv => jv.Van)
+        //        .Where(jv => jv.Job.Date >= startDate && jv.Job.Date <= endDate)
+        //        .GroupBy(jv => new
+        //        {
+        //            jv.VanId,
+        //            jv.Van.VanName
+        //        })
+        //        .Select(g => new VanReportDto
+        //        {
+        //            VanId = g.Key.VanId,
+        //            VanName = g.Key.VanName,
+        //            TotalJobs = g.Count(),
+        //            FirstJobDate = g.Min(x => x.Job.Date.ToDateTime(TimeOnly.MinValue)),
+        //            LastJobDate = g.Max(x => x.Job.Date.ToDateTime(TimeOnly.MinValue))
+        //        })
+        //        .OrderByDescending(r => r.TotalJobs)
+        //        .ToListAsync();
 
-            return report;
-        }
+        //    return report;
+        //}
 
-        // ===========================
-        // JOB SUMMARY REPORT
-        // ===========================
-        public async Task<List<JobSummaryReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate)
-        {
-            var report = await _context.Jobs
-                .Include(j => j.JobContractors)
-                .Where(j => j.Date >= startDate && j.Date <= endDate)
-                .GroupBy(j => j.Date)
-                .Select(g => new JobSummaryReportDto
-                {
-                    Date = g.Key,
-                    TotalJobs = g.Count(),
-                    TotalReceived = g.Sum(x => x.PayReceived),
-                    TotalPaidToContractors = g.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay))
-                })
-                .OrderByDescending(x => x.Date)
-                .ToListAsync();
+        //// ===========================
+        //// JOB SUMMARY REPORT
+        //// ===========================
+        //public async Task<List<JobSummaryReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate)
+        //{
+        //    var report = await _context.Jobs
+        //        .Include(j => j.JobContractors)
+        //        .Where(j => j.Date >= startDate && j.Date <= endDate)
+        //        .GroupBy(j => j.Date)
+        //        .Select(g => new JobSummaryReportDto
+        //        {
+        //            Date = g.Key,
+        //            TotalJobs = g.Count(),
+        //            TotalReceived = g.Sum(x => x.PayReceived),
+        //            TotalPaidToContractors = g.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay))
+        //        })
+        //        .OrderByDescending(x => x.Date)
+        //        .ToListAsync();
 
-            return report;
-        }
+        //    return report;
+        //}
 
 
     }

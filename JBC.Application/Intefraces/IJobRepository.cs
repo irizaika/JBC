@@ -1,8 +1,7 @@
 ﻿using JBC.Domain.Entities;
 using JBC.Domain.Dto;
-using JBC.Application.Interfaces;
 
-namespace JBC.Application.Intefraces.CrudInterfaces
+namespace JBC.Application.Interfaces
 {
     public interface IJobRepository : IGenericRepository<Job>
     {
@@ -11,7 +10,7 @@ namespace JBC.Application.Intefraces.CrudInterfaces
         Task<Job?> GetJobsWithRelationsAsync(int id);
         Task<List<PartnerJobSummaryDto>> PartnerJobSummary(DateOnly startDate, DateOnly endDate, bool combineNoPartner);
         Task<List<ContractorReportDto>> GetContractorReportAsync(DateOnly startDate, DateOnly endDate, bool combineNoPartner);
-        Task<List<VanReportDto>> GetVanReportAsync(DateOnly startDate, DateOnly endDate);
-        Task<List<JobSummaryReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate);
+        //Task<List<VanReportDto>> GetVanReportAsync(DateOnly startDate, DateOnly endDate);
+        //Task<List<JobSummaryReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate);
     }
 }

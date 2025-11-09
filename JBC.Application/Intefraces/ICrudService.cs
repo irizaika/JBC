@@ -1,4 +1,4 @@
-﻿namespace JBC.Application.Intefraces
+﻿namespace JBC.Application.Interfaces
 {
     public interface ICrudService<TDto>
     {
