@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using JBC.Data.Interfaces;
+using JBC.Application.Interfaces;
 
 namespace JBC.Controllers
 {

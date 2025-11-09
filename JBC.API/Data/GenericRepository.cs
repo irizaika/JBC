@@ -1,4 +1,4 @@
-﻿using JBC.Data.Interfaces;
+﻿using JBC.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

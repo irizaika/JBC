@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JBC.Application\JBC.Application.csproj" />
     <ProjectReference Include="..\JBC.Domain\JBC.Domain.csproj" />
   </ItemGroup>
 

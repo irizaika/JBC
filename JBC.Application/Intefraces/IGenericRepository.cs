@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace JBC.Data.Interfaces
+namespace JBC.Application.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {

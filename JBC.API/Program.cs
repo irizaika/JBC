@@ -1,7 +1,8 @@
+using JBC.Domain.Enum;
 using JBC.Data;
-using JBC.Data.Interfaces;
-using JBC.Models;
-using JBC.Models.Dto;
+using JBC.Application.Interfaces;
+using JBC.Domain.Entities;
+using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

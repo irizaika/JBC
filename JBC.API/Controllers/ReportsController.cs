@@ -1,5 +1,5 @@
 ﻿using JBC.Data;
-using JBC.Data.Interfaces;
+using JBC.Application.Interfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 

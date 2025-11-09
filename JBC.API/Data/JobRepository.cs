@@ -1,4 +1,4 @@
-﻿using JBC.Data.Interfaces;
+﻿using JBC.Application.Interfaces;
 using JBC.Domain.Entities;
 using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;

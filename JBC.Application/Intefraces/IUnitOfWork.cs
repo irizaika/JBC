@@ -1,6 +1,6 @@
 ﻿using JBC.Domain.Entities;
 
-namespace JBC.Data.Interfaces
+namespace JBC.Application.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {

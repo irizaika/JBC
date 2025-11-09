@@ -1,8 +1,7 @@
-﻿using JBC.Data.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Domain.Entities;
 using JBC.Domain.Dto;
 
-namespace JBC.Data.Interfaces
+namespace JBC.Application.Interfaces
 {
     public interface IJobRepository : IGenericRepository<Job>
     {
