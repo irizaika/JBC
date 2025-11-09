@@ -1,76 +1,53 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Application.Intefraces.CrudInterfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JBC.Controllers
+namespace JBC.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class PartnerController : ControllerBase
     {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
+        private readonly IPartnerService _partnerService;
 
-        public PartnerController(IUnitOfWork uow, IMapper mapper)
+        public PartnerController(IPartnerService partnerService)
         {
-            _uow = uow;
-            _mapper = mapper;
+            _partnerService = partnerService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PartnerDto>>> GetAll()
         {
-            var partners = await _uow.Partners.GetAllAsync();
-            var partnerDtos = _mapper.Map<IEnumerable<PartnerDto>>(partners);
-            return Ok(partnerDtos);
+            var partners = await _partnerService.GetAllAsync();
+            return Ok(partners);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PartnerDto>> Get(int id)
         {
-            var partner = await _uow.Partners.GetByIdAsync(id);
-            if (partner == null)  return NotFound();
-
-            var partnerDto = _mapper.Map<PartnerDto>(partner);
-                    
-            return Ok(partnerDto);
+            var partner = await _partnerService.GetByIdAsync(id);
+            if (partner == null) return NotFound();
+            return Ok(partner);
         }
 
         [HttpPost]
         public async Task<ActionResult<PartnerDto>> Create(PartnerDto partnerDto)
         {
-            var partner = _mapper.Map<Partner>(partnerDto);
-
-            await _uow.Partners.AddAsync(partner);
-            await _uow.SaveAsync();
-
-            var responceDto = _mapper.Map<PartnerDto>(partner);
-
-
-            return CreatedAtAction(nameof(Get), new { id = partnerDto.Id }, responceDto);
+            var result = await _partnerService.CreateAsync(partnerDto);
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, PartnerDto partnerDto)
         {
-            if (id != partnerDto.Id) return BadRequest();
-            var partner = _mapper.Map<Partner>(partnerDto);
-
-            _uow.Partners.Update(partner);
-            await _uow.SaveAsync();
-
+            await _partnerService.UpdateAsync(id, partnerDto);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var partner = await _uow.Partners.GetByIdAsync(id);
-            if (partner == null) return NotFound();
-            _uow.Partners.Remove(partner);
-            await _uow.SaveAsync();
+            await _partnerService.DeleteAsync(id);
             return NoContent();
         }
     }

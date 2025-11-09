@@ -4,17 +4,47 @@ using JBC.Application.Interfaces;
 using JBC.Domain.Entities;
 using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
+using JBC.Application.Services;
+using JBC.Application.Intefraces.CrudInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register repositories and services
+builder.Services.AddScoped<IGenericRepository<Contractor>, GenericRepository<Contractor>>();
+builder.Services.AddScoped<IContractorService, ContractorService>();
 
-// Register repositories
-// Register UnitOfWork (scoped per request)
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IGenericRepository<PersonPayRatePerJobType>, GenericRepository<PersonPayRatePerJobType>>();
+builder.Services.AddScoped<IContractorPayService, ContractorPayService>();
+
+builder.Services.AddScoped<IGenericRepository<JobType>, GenericRepository<JobType>>();
+builder.Services.AddScoped<IJobTypeService, JobTypeService>();
+
+builder.Services.AddScoped<IGenericRepository<JobCategory>, GenericRepository<JobCategory>>();
+builder.Services.AddScoped<IJobCategoryService, JobCategoryService>();
+
+builder.Services.AddScoped<IGenericRepository<Partner>, GenericRepository<Partner>>();
+builder.Services.AddScoped<IPartnerService, PartnerService>();
+
+builder.Services.AddScoped<IGenericRepository<Role>, GenericRepository<Role>>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
+builder.Services.AddScoped<IGenericRepository<RolePayRatePerJobCategory>, GenericRepository<RolePayRatePerJobCategory>>();
+builder.Services.AddScoped<IRolePayService, RolePayService>();
+
+builder.Services.AddScoped<IGenericRepository<Van>, GenericRepository<Van>>();
+builder.Services.AddScoped<IVanService, VanService>();
+
+
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Register UnitOfWork (scoped per request)
 builder.Services.AddScoped<IJobRepository, JobRepository>();
+
+
+
+//builder.Services.AddScoped<IVanService, VanService>();
 
 //builder.Services.AddAutoMapper(typeof(Program)); // Scans all profiles in the assembly
 builder.Services.AddAutoMapper(config =>

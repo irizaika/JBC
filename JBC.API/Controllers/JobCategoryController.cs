@@ -1,75 +1,53 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Application.Intefraces.CrudInterfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JBC.Controllers
+namespace JBC.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class JobCategoryController : ControllerBase
     {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
+        private readonly IJobCategoryService _jobCategoryService;
 
-        public JobCategoryController(IUnitOfWork uow, IMapper mapper) 
-        { 
-            _uow = uow;
-            _mapper = mapper;
+        public JobCategoryController(IJobCategoryService jobCategoryService)
+        {
+            _jobCategoryService = jobCategoryService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobCategoryDto>>> GetAll()
         {
-            var jobCategories = await _uow.JobCategories.GetAllAsync();
-            var jobCategoryDtos = _mapper.Map<IEnumerable<JobCategoryDto>>(jobCategories);
-            return Ok(jobCategoryDtos);
+            var jobCategories = await _jobCategoryService.GetAllAsync();
+            return Ok(jobCategories);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<JobCategoryDto>> Get(int id)
         {
-            var jobCategory = await _uow.JobCategories.GetByIdAsync(id);
-            if (jobCategory == null) return NotFound();
-
-            var jobCategoryDto = _mapper.Map<JobCategoryDto>(jobCategory);
+            var jobCategoryDto = await _jobCategoryService.GetByIdAsync(id);
+            if (jobCategoryDto == null) return NotFound();
             return Ok(jobCategoryDto);
         }
 
         [HttpPost]
         public async Task<ActionResult<JobCategoryDto>> Create(JobCategoryDto jobCategoryDto)
         {
-            var jobCategory = _mapper.Map<JobCategory>(jobCategoryDto);
-
-            await _uow.JobCategories.AddAsync(jobCategory);
-            await _uow.SaveAsync();
-
-            var responceDto = _mapper.Map<JobCategoryDto>(jobCategory);
-
-            return CreatedAtAction(nameof(Get), new { id = jobCategoryDto.Id }, responceDto);
+            var result = await _jobCategoryService.CreateAsync(jobCategoryDto);
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, JobCategoryDto jobCategoryDto)
         {
-            if (id != jobCategoryDto.Id) return BadRequest();
-
-            var jobCategory = _mapper.Map<JobCategory>(jobCategoryDto);
-
-            _uow.JobCategories.Update(jobCategory);
-            await _uow.SaveAsync();
-
+            await _jobCategoryService.UpdateAsync(id, jobCategoryDto);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var jobCategory = await _uow.JobCategories.GetByIdAsync(id);
-            if (jobCategory == null) return NotFound();
-            _uow.JobCategories.Remove(jobCategory);
-            await _uow.SaveAsync();
+            await _jobCategoryService.DeleteAsync(id);
             return NoContent();
         }
     }

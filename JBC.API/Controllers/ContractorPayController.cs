@@ -1,83 +1,53 @@
-﻿using AutoMapper;
-using JBC.Infrastructure.Data;
-using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Application.Intefraces.CrudInterfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
-namespace JBC.Controllers
+namespace JBC.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ContractorPayController : ControllerBase
     {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
+        private readonly IContractorPayService _contractorPayService;
 
-        public ContractorPayController(IUnitOfWork uow, IMapper mapper)
+        public ContractorPayController(IContractorPayService contractorPayService)
         {
-            _uow = uow;
-            _mapper = mapper;
+            _contractorPayService = contractorPayService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonPayRatePerJobType>>> GetAll()
+        public async Task<ActionResult<IEnumerable<PersonPayRatePerJobTypeDto>>> GetAll()
         {
-            var rates = await _uow.PersonRatesPerJobType.GetAllAsync();
-
-            var ratesDtos = _mapper.Map<IEnumerable<PersonPayRatePerJobTypeDto>>(rates);
-
-            return Ok(ratesDtos);
+            var contractorPayDtos = await _contractorPayService.GetAllAsync();
+            return Ok(contractorPayDtos);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PersonPayRatePerJobTypeDto>> Get(int id)
         {
-            var rate = await _uow.PersonRatesPerJobType.GetByIdAsync(id);
-
-            if (rate == null) return NotFound();
-
-            var rateDto = _mapper.Map<PersonPayRatePerJobTypeDto>(rate);
-
-            return Ok(rateDto);
+            var contractorPayDto = await _contractorPayService.GetByIdAsync(id);
+            if (contractorPayDto == null) return NotFound();
+            return Ok(contractorPayDto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<PersonPayRatePerJobTypeDto>> Create(PersonPayRatePerJobTypeDto rateDto)
+        public async Task<ActionResult<PersonPayRatePerJobTypeDto>> Create(PersonPayRatePerJobTypeDto contractorPayDto)
         {
-            var rate = _mapper.Map<PersonPayRatePerJobType>(rateDto);
-
-            await _uow.PersonRatesPerJobType.AddAsync(rate);
-            await _uow.SaveAsync();
-
-            var responceDto = _mapper.Map<PersonPayRatePerJobTypeDto>(rate);
-
-            return CreatedAtAction(nameof(Get), new { id = rate.Id }, responceDto);
+            var result = await _contractorPayService.CreateAsync(contractorPayDto);
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, PersonPayRatePerJobTypeDto rateDto)
+        public async Task<IActionResult> Update(int id, PersonPayRatePerJobTypeDto contractorPayDto)
         {
-            if (id != rateDto.Id) return BadRequest();
-            var rate = _mapper.Map<PersonPayRatePerJobType>(rateDto);
-
-            _uow.PersonRatesPerJobType.Update(rate);
-            await _uow.SaveAsync();
-
+            await _contractorPayService.UpdateAsync(id, contractorPayDto);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var rate = await _uow.PersonRatesPerJobType.GetByIdAsync(id);
-
-            if (rate == null) return NotFound();
-
-            _uow.PersonRatesPerJobType.Remove(rate);
-            await _uow.SaveAsync();
-
+            await _contractorPayService.DeleteAsync(id);
             return NoContent();
         }
     }

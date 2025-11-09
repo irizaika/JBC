@@ -1,7 +1,8 @@
 ﻿using JBC.Domain.Entities;
 using JBC.Domain.Dto;
+using JBC.Application.Interfaces;
 
-namespace JBC.Application.Interfaces
+namespace JBC.Application.Intefraces.CrudInterfaces
 {
     public interface IJobRepository : IGenericRepository<Job>
     {

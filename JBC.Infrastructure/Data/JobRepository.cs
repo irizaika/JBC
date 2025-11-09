@@ -1,8 +1,8 @@
-﻿using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Domain.Entities;
 using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using JBC.Application.Intefraces.CrudInterfaces;
 
 namespace JBC.Infrastructure.Data
 {

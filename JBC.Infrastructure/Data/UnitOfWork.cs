@@ -1,4 +1,5 @@
-﻿using JBC.Application.Interfaces;
+﻿using JBC.Application.Intefraces.CrudInterfaces;
+using JBC.Application.Interfaces;
 using JBC.Domain.Entities;
 
 namespace JBC.Infrastructure.Data

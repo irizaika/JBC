@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces;
-using JBC.Domain.Entities;
+﻿using JBC.Application.Intefraces.CrudInterfaces;
 using JBC.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,96 +8,47 @@ namespace JBC.Controllers
     [Route("api/[controller]")]
     public class ContractorController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IContractorService _service;
 
-        public ContractorController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ContractorController(IContractorService service)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ContractorDto>>> GetAll()
         {
-            var contractors = await _unitOfWork.Contractors.GetAllAsync();
-            var contractorDtos = _mapper.Map<IEnumerable<ContractorDto>>(contractors);
-
-            // Load all rates once
-            var allRoleRates = await _unitOfWork.RoleRatePerJobCategory
-                .GetAllAsync();
-
-            var allContractorRates = await _unitOfWork.PersonRatesPerJobType
-                .GetAllAsync();
-
-            // Populate dictionaries
-            foreach (var dto in contractorDtos)
-            {
-                dto.RoleRates = allRoleRates
-                    .Where(r => r.RoleId == dto.RoleId)
-                    .ToDictionary(r => r.JobCategoryId, r => r.Pay);
-
-                dto.ContractorRates = allContractorRates
-                    .Where(c => c.ContractorId == dto.Id)
-                    .ToDictionary(c => c.JobTypeId, c => c.Pay);
-            }
-
-            return Ok(contractorDtos);
+            return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ContractorDto>> GetById(int id)
         {
-            var contractor = await _unitOfWork.Contractors.GetByIdAsync(id);
-            if (contractor == null) return NotFound();
-            var contractorDto = _mapper.Map<ContractorDto>(contractor);
-            return contractorDto; 
+            var dto = await _service.GetByIdAsync(id);
+            if (dto == null) return NotFound();
+            return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ContractorDto>> Create(ContractorDto contractorDto)
+        public async Task<ActionResult<ContractorDto>> Create(ContractorDto dto)
         {
-            var contractor = _mapper.Map<Contractor>(contractorDto);
-
-            await _unitOfWork.Contractors.AddAsync(contractor);
-            await _unitOfWork.SaveAsync();
-
-            var responceDto = _mapper.Map<ContractorDto>(contractor);
-
-            return CreatedAtAction(nameof(GetById), new { id = contractor.Id }, responceDto);
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, ContractorDto contractorDto)
+        public async Task<IActionResult> Update(int id, ContractorDto dto)
         {
-            if (id != contractorDto.Id) return BadRequest();
-
-            var contractor = _mapper.Map<Contractor>(contractorDto);
-
-            _unitOfWork.Contractors.Update(contractor);
-            await _unitOfWork.SaveAsync();
-
+            if (id != dto.Id) return BadRequest();
+            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var contractor = await _unitOfWork.Contractors.GetByIdAsync(id);
-            if (contractor == null) return NotFound();
-
-            _unitOfWork.Contractors.Remove(contractor);
-            await _unitOfWork.SaveAsync();
+            await _service.DeleteAsync(id);
             return NoContent();
         }
-
-        //[HttpGet("statuses")]
-        //public IActionResult GetStatuses()
-        //{
-        //    var values = Enum.GetValues(typeof(ContractorStatus))
-        //        .Cast<ContractorStatus>()
-        //        .Select(s => new { value = (int)s, label = s.ToString() });
-        //    return Ok(values);
-        //}
     }
 }
