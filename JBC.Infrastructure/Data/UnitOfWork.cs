@@ -1,7 +1,7 @@
 ﻿using JBC.Application.Interfaces;
 using JBC.Domain.Entities;
 
-namespace JBC.Data
+namespace JBC.Infrastructure.Data
 {
     public class UnitOfWork : IUnitOfWork
     {

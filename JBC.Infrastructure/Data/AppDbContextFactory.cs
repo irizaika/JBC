@@ -1,17 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
-namespace JBC.Data
+namespace JBC.Infrastructure.Data
 {
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         public AppDbContext CreateDbContext(string[] args)
         {
             // Build config to read from appsettings.json
+            var settingsPath = Environment.GetEnvironmentVariable("JBC_APPSETTINGS_PATH")
+                              ?? Path.Combine(Directory.GetCurrentDirectory(), "../JBC.API/appsettings.json");
+
             var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // root of the project
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile(settingsPath, optional: false)
                 .Build();
+
 
             var connectionString = config.GetConnectionString("DefaultConnection");
 

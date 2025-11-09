@@ -2,10 +2,9 @@
 using JBC.Domain.Entities;
 using JBC.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace JBC.Data
+namespace JBC.Infrastructure.Data
 {
     public class JobRepository : GenericRepository<Job>, IJobRepository
     {

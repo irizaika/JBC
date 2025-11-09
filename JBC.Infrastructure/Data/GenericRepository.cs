@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace JBC.Data
+namespace JBC.Infrastructure.Data
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

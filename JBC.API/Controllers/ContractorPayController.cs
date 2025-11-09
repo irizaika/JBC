@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using JBC.Data;
+using JBC.Infrastructure.Data;
 using JBC.Application.Interfaces;
 using JBC.Domain.Entities;
 using JBC.Domain.Dto;

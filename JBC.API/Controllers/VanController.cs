@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using JBC.Application.Interfaces;
 using JBC.Domain.Entities;
 using JBC.Domain.Dto;

@@ -1,8 +1,8 @@
 ﻿using JBC.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Logging;
+//using Microsoft.IdentityModel.Logging;
 
-namespace JBC.Data
+namespace JBC.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {

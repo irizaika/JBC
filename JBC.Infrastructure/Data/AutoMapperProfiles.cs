@@ -2,7 +2,7 @@
 //using JBC.Domain.Entities;
 //using JBC.Domain.Dto;
 
-//namespace JBC.Data
+//namespace JBC.Infrastructure.Data
 //{
 //    public class VanProfile : Profile
 //    {
@@ -53,7 +53,7 @@
 //                .ForMember(dest => dest.Partner, opt => opt.Ignore())
 //                .ForMember(dest => dest.JobType, opt => opt.Ignore());
 //        }
-    
+
 //    }
 
 //    public class ContractorProfile : Profile
