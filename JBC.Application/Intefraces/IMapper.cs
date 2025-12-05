@@ -1,0 +1,8 @@
+﻿namespace JBC.Application.Interfaces
+{
+    public interface IMapper<TEntity, TDto>
+    {
+        TDto ToDto(TEntity entity);
+        TEntity ToEntity(TDto dto);
+    }
+}

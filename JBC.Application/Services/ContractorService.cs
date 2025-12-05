@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces.CrudInterfaces;
+﻿using JBC.Application.Interfaces.CrudInterfaces;
 using JBC.Application.Interfaces;
 using JBC.Domain.Dto;
 using JBC.Domain.Entities;
+using JBC.Application.Helpers;
 
 namespace JBC.Application.Services
 {
     public class ContractorService : CrudService<ContractorDto, Contractor>, IContractorService
     {
-        public ContractorService(IUnitOfWork uow, IMapper mapper)
+        public ContractorService(IUnitOfWork uow, IMapper<Contractor, ContractorDto> mapper)
             : base(uow, mapper, uow.Contractors)
         {
         }
@@ -16,7 +16,8 @@ namespace JBC.Application.Services
         public override async Task<IEnumerable<ContractorDto>> GetAllAsync()
         {
             var contractors = await _uow.Contractors.GetAllAsync();
-            var contractorDtos = _mapper.Map<IEnumerable<ContractorDto>>(contractors);
+
+            var contractorDtos = contractors.Select(c => _mapper.ToDto(c)).ToList();
 
             var allRoleRates = await _uow.RoleRatePerJobCategory.GetAllAsync();
             var allContractorRates = await _uow.PersonRatesPerJobType.GetAllAsync();

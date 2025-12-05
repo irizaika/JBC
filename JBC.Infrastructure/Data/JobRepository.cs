@@ -1,8 +1,10 @@
-﻿using JBC.Domain.Entities;
+﻿using JBC.Application.Interfaces;
 using JBC.Domain.Dto;
+using JBC.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using JBC.Application.Interfaces;
 
 namespace JBC.Infrastructure.Data
 {
@@ -189,6 +191,258 @@ namespace JBC.Infrastructure.Data
                 return report;
             }
         }
+
+
+        public async Task<List<JobSummaryPeriodReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate, string period = "week")
+        {
+            var data = await _context.Jobs
+                .Include(j => j.JobContractors)
+                .Where(j => j.Date >= startDate && j.Date <= endDate)
+                .ToListAsync();
+
+            // Group logic based on period
+            var lower = period.ToLower();
+
+            IEnumerable<IGrouping<object, Job>> grouped;
+            List<JobSummaryPeriodReportDto> result = new List<JobSummaryPeriodReportDto>();
+
+            try
+            {
+                switch (lower)
+                {
+                    case "month":
+                        grouped = data.GroupBy(j => new
+                        {
+                            j.Date.Year,
+                            j.Date.Month
+                        });
+                        break;
+
+                    case "week":
+                        var calendar = CultureInfo.InvariantCulture.Calendar;
+
+                        grouped = data.GroupBy(j => new
+                        {
+                            j.Date.Year,
+                            Week = calendar.GetWeekOfYear(
+                                j.Date.ToDateTime(TimeOnly.MinValue),
+                                CalendarWeekRule.FirstFourDayWeek,
+                                DayOfWeek.Monday
+                            )
+                        });
+                        break;
+
+                    default:
+                        grouped = data.GroupBy(j => j.Date.ToString("yyyy-MM-dd"));
+                        break;
+                }
+
+
+                result = grouped.Select(g => new JobSummaryPeriodReportDto
+                {
+                    Period = period,
+                    Key = g.Key.ToString(),
+                    TotalJobs = g.Count(),
+                    TotalReceived = g.Sum(x => x.PayReceived),
+                    TotalPaidToContractors = g.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay)),
+                    Profit = (decimal)g.Sum(x => x.PayReceived) - g.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay))
+                })
+                .OrderByDescending(x => x.Key)
+                .ToList();
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return result;
+        }
+
+        public async Task<List<CalendarChartDto>> GetJobsCalendarAsync()
+        {
+            // Load jobs in range
+            var jobs = await _context.Jobs
+                // .Where(j => j.Date >= startDate && j.Date <= endDate)
+                .ToListAsync();
+
+            var startDate = jobs.Min(j => j.Date);
+            var endDate = jobs.Max(j => j.Date);
+
+            // Group by day
+            var grouped = jobs
+                .GroupBy(j => j.Date)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Count()
+                );
+
+            var result = new List<CalendarChartDto>();
+
+            // Fill missing days
+            for (var d = startDate; d <= endDate; d = d.AddDays(1))
+            {
+                     if (grouped.ContainsKey(d))
+                {
+                 result.Add(new CalendarChartDto
+                {
+                  Day = d.ToString("yyyy-MM-dd"),
+                    Value = grouped.ContainsKey(d) ? grouped[d] : 0
+                });
+        }
+            }
+
+            return result;
+        }
+
+        public async Task<List<CalendarChartDto>> GetJobsCalendarAsync(int? vanId = null, int? contractorId = null, int? partnerId = null, int? jobTypeId = null)
+        {
+            var jobsQuery = _context.Jobs
+                .Include(j => j.JobVans)
+                    .ThenInclude(jv => jv.Van)
+                .Include(j => j.JobContractors)
+                    .ThenInclude(jc => jc.Contractor)
+                .AsQueryable();
+
+            // Apply filters
+            if (vanId.HasValue)
+                jobsQuery = jobsQuery.Where(j => j.JobVans.Any(jv => jv.VanId == vanId.Value));
+
+            if (contractorId.HasValue)
+                jobsQuery = jobsQuery.Where(j => j.JobContractors.Any(jc => jc.ContractorId == contractorId.Value));
+
+            if (partnerId.HasValue)
+                jobsQuery = jobsQuery.Where(j => j.PartnerId == partnerId.Value);
+
+            if (jobTypeId.HasValue)
+                jobsQuery = jobsQuery.Where(j => j.JobTypeId == jobTypeId.Value);
+
+            var jobs = await jobsQuery.ToListAsync();
+
+            if (!jobs.Any()) return new List<CalendarChartDto>();
+
+            var startDate = jobs.Min(j => j.Date);
+            var endDate = jobs.Max(j => j.Date);
+
+            var grouped = jobs
+                .GroupBy(j => j.Date)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var result = new List<CalendarChartDto>();
+
+            for (var d = startDate; d <= endDate; d = d.AddDays(1))
+            {
+                if (grouped.ContainsKey(d))
+                {
+                    result.Add(new CalendarChartDto
+                    {
+                        Day = d.ToString("yyyy-MM-dd"),
+                        Value = grouped.ContainsKey(d) ? grouped[d] : 0
+                    });
+                }
+            }
+
+            return result;
+        }
+
+
+
+
+        //public async Task<List<JobSummaryPeriodReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate, string period = "day")
+        //{
+        //    var data = await _context.Jobs
+        //        .Include(j => j.JobContractors)
+        //        .Where(j => j.Date >= startDate && j.Date <= endDate)
+        //        .ToListAsync();
+
+        //    var lower = period.ToLower();
+        //    IEnumerable<IGrouping<object, Job>> grouped;
+
+        //    // ====== GROUP EXISTING JOBS =======
+        //    switch (lower)
+        //    {
+        //        case "month":
+        //            grouped = data.GroupBy(j => new { j.Date.Year, j.Date.Month });
+        //            break;
+
+        //        case "week":
+        //            grouped = data.GroupBy(j => new
+        //            {
+        //                j.Date.Year,
+        //                Week = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(
+        //                    j.Date.ToDateTime(TimeOnly.MinValue),
+        //                    CalendarWeekRule.FirstFourDayWeek,
+        //                    DayOfWeek.Monday)
+        //            });
+        //            break;
+
+        //        default: // day
+        //            grouped = data.GroupBy(j => j.Date.ToString("yyyy-MM-dd"));
+        //            break;
+        //    }
+
+        //    // ====== BUILD COMPLETE PERIOD RANGE =======
+        //    var result = new List<JobSummaryPeriodReportDto>();
+
+        //    if (lower == "day")
+        //    {
+        //        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        //        {
+        //            var g = grouped.FirstOrDefault(x => x.Key.Equals(date));
+        //            result.Add(CreateDto(period, date.ToString("yyyy-MM-dd"), g));
+        //        }
+        //    }
+        //    else if (lower == "month")
+        //    {
+        //        var cur = new DateTime(startDate.Year, startDate.Month, 1);
+        //        var last = new DateTime(endDate.Year, endDate.Month, 1);
+
+        //        for (; cur <= last; cur = cur.AddMonths(1))
+        //        {
+        //            var g = grouped.FirstOrDefault(x =>
+        //                (int)x.Key.GetType().GetProperty("Year").GetValue(x.Key)! == cur.Year &&
+        //                (int)x.Key.GetType().GetProperty("Month").GetValue(x.Key)! == cur.Month);
+
+        //            result.Add(CreateDto(period, $"{cur:yyyy-MM}", g));
+        //        }
+        //    }
+        //    else if (lower == "week")
+        //    {
+        //        var calendar = CultureInfo.InvariantCulture.Calendar;
+        //        var startWeek = calendar.GetWeekOfYear(startDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        //        var endWeek = calendar.GetWeekOfYear(endDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        //        for (int y = startDate.Year; y <= endDate.Year; y++)
+        //        {
+        //            for (int w = (y == startDate.Year ? startWeek : 1); w <= (y == endDate.Year ? endWeek : 52); w++)
+        //            {
+        //                var g = grouped.FirstOrDefault(x =>
+        //                    (int)x.Key.GetType().GetProperty("year").GetValue(x.Key)! == y &&
+        //                    (int)x.Key.GetType().GetProperty("week").GetValue(x.Key)! == w);
+
+        //                result.Add(CreateDto(period, $"{y}-W{w}", g));
+        //            }
+        //        }
+        //    }
+
+        //    return result.OrderBy(x => x.Key).ToList();
+        //}
+
+
+        //// ====== Helper to build DTO with correct 0 values when missing =======
+        //private static JobSummaryPeriodReportDto CreateDto(string period, string key, IGrouping<object, Job>? g)
+        //{
+        //    return new JobSummaryPeriodReportDto
+        //    {
+        //        Period = period,
+        //        Key = key,
+        //        TotalJobs = g?.Count() ?? 0,
+        //        TotalReceived = g?.Sum(x => x.PayReceived) ?? 0,
+        //        TotalPaidToContractors = g?.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay)) ?? 0,
+        //        Profit = (g?.Sum(x => x.PayReceived) ?? 0) -
+        //                 (g?.Sum(x => x.JobContractors.Sum(c => (decimal)c.Pay)) ?? 0)
+        //    };
+        //}
 
 
         //// ===========================

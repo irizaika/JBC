@@ -1,35 +1,35 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces;
+﻿using JBC.Application.Interfaces;
 using JBC.Application.Interfaces.CrudInterfaces;
 using JBC.Domain.Dto;
 using JBC.Domain.Entities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace JBC.Application.Services
 {
     public class JobService : CrudService<JobDto, Job>, IJobService
     {
-        public JobService(IUnitOfWork uow, IMapper mapper) : base(uow, mapper, uow.Jobs)
+        public JobService(IUnitOfWork uow, IMapper<Job, JobDto> mapper) : base(uow, mapper, uow.Jobs)
         {
         }
 
         public new async Task<IEnumerable<JobDto>> GetAllAsync()
         {
             var jobs = await _uow.Jobs.GetAllAsync();
-            return _mapper.Map<IEnumerable<JobDto>>(jobs);
+            return jobs.Select(e => _mapper.ToDto(e));
         }
 
         public new async Task<JobDto?> GetByIdAsync(int id)
         {
             var job = await _uow.Jobs.GetJobsWithRelationsAsync(id);
-            return job == null ? null : _mapper.Map<JobDto>(job);
+            return job == null ? null : _mapper.ToDto(job);
         }
 
         public new async Task<JobDto> CreateAsync(JobDto dto)
         {
-            var job = _mapper.Map<Job>(dto);
+            var job = _mapper.ToEntity(dto);
             await _uow.Jobs.AddAsync(job);
             await _uow.SaveAsync();
-            return _mapper.Map<JobDto>(job);
+            return _mapper.ToDto(job);
         }
 
         public async Task<JobDto> UpdateJobAsync(int id, JobDto dto)
@@ -41,7 +41,17 @@ namespace JBC.Application.Services
             if (job == null)
                 throw new KeyNotFoundException("Job not found");
 
-            _mapper.Map(dto, job);
+            var updatedJob = _mapper.ToEntity(dto);
+
+            job.PartnerId = updatedJob.PartnerId;
+            job.Date = updatedJob.Date;
+            job.CustomerName = updatedJob.CustomerName;
+            job.PayReceived = updatedJob.PayReceived;
+            job.PartnerId = updatedJob.PartnerId;
+            job.JobTypeId = updatedJob.JobTypeId;
+            job.Count = updatedJob.Count;
+            job.Details = updatedJob.Details;
+
 
             job.JobContractors.Clear();
             if (dto.Contractors != null)
@@ -69,7 +79,7 @@ namespace JBC.Application.Services
             }
 
             await _uow.SaveAsync();
-            return _mapper.Map<JobDto>(job);
+            return _mapper.ToDto(job);
         }
 
         public new async Task DeleteAsync(int id)
@@ -85,7 +95,7 @@ namespace JBC.Application.Services
         public async Task<IEnumerable<object>> GetJobsInRangeAsync(DateOnly start, DateOnly end)
         {
             var jobs = await _uow.Jobs.GetJobsInRangeAsync(start, end);
-            var mappedJobs = _mapper.Map<List<JobDto>>(jobs);
+            var mappedJobs = jobs.Select(e => _mapper.ToDto(e));
 
             var jobsByDate = mappedJobs
                 .GroupBy(j => j.Date)
@@ -107,7 +117,7 @@ namespace JBC.Application.Services
         public async Task<IEnumerable<JobDto>> GetDayJobsAsync(DateOnly day)
         {
             var jobs = await _uow.Jobs.GetDayJobsAsync(day);
-            return _mapper.Map<IEnumerable<JobDto>>(jobs);
+            return jobs.Select(e => _mapper.ToDto(e));
         }
     }
 }

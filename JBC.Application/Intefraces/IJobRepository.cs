@@ -10,6 +10,12 @@ namespace JBC.Application.Interfaces
         Task<Job?> GetJobsWithRelationsAsync(int id);
         Task<List<PartnerJobSummaryDto>> PartnerJobSummary(DateOnly startDate, DateOnly endDate, bool combineNoPartner);
         Task<List<ContractorReportDto>> GetContractorReportAsync(DateOnly startDate, DateOnly endDate, bool combineNoPartner);
+        Task<List<JobSummaryPeriodReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate, string period);
+        Task<List<CalendarChartDto>> GetJobsCalendarAsync();
+        Task<List<CalendarChartDto>> GetJobsCalendarAsync(int? vanId = null, int? contractorId = null, int? partnerId = null, int? jobTypeId = null);
+
+
+
         //Task<List<VanReportDto>> GetVanReportAsync(DateOnly startDate, DateOnly endDate);
         //Task<List<JobSummaryReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate);
     }

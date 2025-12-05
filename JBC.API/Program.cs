@@ -1,5 +1,6 @@
 using JBC.Application.Interfaces;
 using JBC.Application.Interfaces.CrudInterfaces;
+using JBC.Application.Mappers;
 using JBC.Application.Services;
 using JBC.Domain.Dto;
 using JBC.Domain.Entities;
@@ -44,62 +45,15 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Register UnitOfWork (scoped per request)
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 
-
-//builder.Services.AddAutoMapper(typeof(Program)); // Scans all profiles in the assembly
-builder.Services.AddAutoMapper(config =>
-{
-    config.CreateMap<Van, VanDto>().ReverseMap();
-    config.CreateMap<Job, JobDto>().ReverseMap();
-
-    //config.CreateMap<Contractor, ContractorDto>()
-    //.ForMember(dest => dest.Status, opt =>
-    //    opt.MapFrom(src => ((ContractorStatus)src.Status).ToString())) // int ? string
-    //.ReverseMap()
-    //.ForMember(dest => dest.Status, opt =>
-    //    opt.MapFrom(src => (Enum.TryParse<ContractorStatus>(src.Status, out ContractorStatus status))
-    //        ? (int)status
-    //        : (int)ContractorStatus.NotSet)); // string ? int
-
-    config.CreateMap<Contractor, ContractorDto>().ReverseMap();
-           //.ForMember(dest => dest.Status,
-           //    opt => opt.MapFrom(src => ContractorMappingHelpers.ParseStatus(src.Status)));
-
-    config.CreateMap<Job, JobDto>()
-                .ForMember(dest => dest.PartnerName,
-                    opt => opt.MapFrom(src => src.Partner != null ? src.Partner.CompanyName : null))
-                .ForMember(dest => dest.JobTypeName,
-                    opt => opt.MapFrom(src => src.JobType != null ? src.JobType.Name : null))
-                .ForMember(dest => dest.Contractors,
-                    opt => opt.MapFrom(src => src.JobContractors != null
-                        ? src.JobContractors.Select(jc => new JobContractorDto { ContractorId = jc.ContractorId, Pay = jc.Pay } /*, ContractorName = jc.Contractor.ShortName*/ ).ToList()
-                        : Enumerable.Empty<JobContractorDto>()))
-                .ForMember(dest => dest.Vans,
-                    opt => opt.MapFrom(src => src.JobVans != null
-                        ? src.JobVans.Select(jv => jv.VanId/*, VanName = jv.Van.VanName*/).ToList()
-                        : Enumerable.Empty<int>()))
-                .ForMember(dest => dest.CustomerName, 
-                    opt => opt.MapFrom(src => string.IsNullOrEmpty(src.CustomerName) ? null : src.CustomerName))
-                .ReverseMap()
-                .ForMember(dest => dest.JobContractors, opt => opt.MapFrom(src =>
-                    src.Contractors != null
-                        ? src.Contractors.Select(c => new JobContractor { ContractorId = c.ContractorId, Pay=c.Pay, JobId = src.Id })
-                        : new List<JobContractor>()))
-                .ForMember(dest => dest.JobVans, opt => opt.MapFrom(src =>
-                    src.Vans != null
-                        ? src.Vans.Select(v => new JobVan { VanId = v, JobId = src.Id })
-                        : new List<JobVan>()))
-                .ForMember(dest => dest.Partner, opt => opt.Ignore())
-                .ForMember(dest => dest.JobType, opt => opt.Ignore());
-
-    config.CreateMap<Partner, PartnerDto>().ReverseMap();
-    config.CreateMap<Role, RoleDto>().ReverseMap();
-    config.CreateMap<JobCategory, JobCategoryDto>().ReverseMap();
-    config.CreateMap<JobType, JobTypeDto>().ReverseMap();
-    config.CreateMap<PartnersRate, PartnersRateDto>().ReverseMap();
-    config.CreateMap<ContractorsRate, ContractorsRateDto>().ReverseMap();
-    config.CreateMap<PersonPayRatePerJobType, PersonPayRatePerJobTypeDto>().ReverseMap();
-    config.CreateMap<RolePayRatePerJobCategory, RolePayRatePerJobCategoryDto>().ReverseMap();
-});
+builder.Services.AddScoped<IMapper<Contractor, ContractorDto>, ContractorMapping>();
+builder.Services.AddScoped<IMapper<Job, JobDto>, JobMapping>();
+builder.Services.AddScoped<IMapper<JobCategory, JobCategoryDto>, JobCategoryMapping>();
+builder.Services.AddScoped<IMapper<JobType, JobTypeDto>, JobTypeMapping>();
+builder.Services.AddScoped<IMapper<Partner, PartnerDto>, PartnerMapping>();
+builder.Services.AddScoped<IMapper<PersonPayRatePerJobType, PersonPayRatePerJobTypeDto>, PersonPayRateMapping>();
+builder.Services.AddScoped<IMapper<Role, RoleDto>, RoleMapping>();
+builder.Services.AddScoped<IMapper<RolePayRatePerJobCategory, RolePayRatePerJobCategoryDto>, RolePayRateMapping>();
+builder.Services.AddScoped<IMapper<Van, VanDto>, VanMapping>();
 
 
 builder.Services.AddControllers();
@@ -107,15 +61,62 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", policy =>
+//    {
+//        //var allowedOrigins = new List<string>
+//        //{
+//        //    "http://localhost:3001",
+//        //    "https://localhost:3001",
+//        //    "http://localhost:3000",
+//        //    "https://localhost:3000",
+//        //    "http://192.168.8.234:3001",
+//        //    "https://192.168.8.234:3001"
+//        //};
+
+//        //// Read dynamic URL from environment variable
+//        //var tunnelUrl = Environment.GetEnvironmentVariable("FRONTEND_TUNNEL_URL");
+//        //if (!string.IsNullOrEmpty(tunnelUrl))
+//        //{
+//        //    allowedOrigins.Add(tunnelUrl);
+//        //    Console.WriteLine($"Added dynamic CORS origin: {tunnelUrl}");
+//        //}
+
+//        //policy.WithOrigins(allowedOrigins.ToArray())
+//        //      .AllowAnyHeader()
+//        //      .AllowAnyMethod();
+//        policy.AllowAnyOrigin()
+//      .AllowAnyHeader()
+//      .AllowAnyMethod();
+//    });
+//});
+
+
+var frontendTunnel = Environment.GetEnvironmentVariable("FRONTEND_TUNNEL_URL");
+var backendTunnel = Environment.GetEnvironmentVariable("BACKEND_TUNNEL_URL");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // React dev server
+        var allowed = new[]
+        {
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "https://localhost:3000",
+            "https://localhost:3001",
+            "https://80.89.73.59:3001",
+            "http://80.89.73.59:3001",
+            frontendTunnel
+        };
+
+        policy.WithOrigins(allowed.Where(x => !string.IsNullOrEmpty(x)).ToArray())
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
+
 
 var app = builder.Build();
 
@@ -126,7 +127,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 
@@ -149,17 +150,17 @@ void ApplyMigration()
     }
 }
 
-static int ParseStatus(string s) =>
-    Enum.TryParse<ActivityStatus>(s, out var status)
-        ? (int)status
-        : (int)ActivityStatus.NotSet;
+//static int ParseStatus(string s) =>
+//    Enum.TryParse<ActivityStatus>(s, out var status)
+//        ? (int)status
+//        : (int)ActivityStatus.NotSet;
 
-public static class ContractorMappingHelpers
-{
-    public static int ParseStatus(int status)
-    {
-        //if (Enum.TryParse<ContractorStatus>(statusString, out var status))
-            return (int)status;
-      //  return (int)ContractorStatus.NotSet;
-    }
-}
+//public static class ContractorMappingHelpers
+//{
+//    public static int ParseStatus(int status)
+//    {
+//        //if (Enum.TryParse<ContractorStatus>(statusString, out var status))
+//            return (int)status;
+//      //  return (int)ContractorStatus.NotSet;
+//    }
+//}

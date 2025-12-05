@@ -22,6 +22,16 @@ namespace JBC.API.Controllers
         public async Task<IActionResult> GetContractorReport(DateOnly startDate, DateOnly endDate, bool combineNoPartner)
             => Ok(await _reportService.GetContractorReportAsync(startDate, endDate, combineNoPartner));
 
+        [HttpGet("job-summary")]
+        public async Task<IActionResult> GetJobSummaryReport(DateOnly startDate, DateOnly endDate, string period)
+            => Ok(await _reportService.GetJobSummaryReportAsync(startDate, endDate, period));
+
+        
+
+        [HttpGet("job-calendar")]
+        public async Task<IActionResult> GetJobsCalendarReport(int? vanId = null, int? contractorId = null, int? partnerId = null, int? jobTypeId = null)
+            => Ok(await _reportService.GetJobsCalendarAsync(vanId, contractorId, partnerId, jobTypeId));
+        
         //[HttpGet("vans")]
         //public async Task<IActionResult> GetVanReport(DateOnly startDate, DateOnly endDate)
         //    => Ok(await _context.Jobs.GetVanReportAsync(startDate, endDate));

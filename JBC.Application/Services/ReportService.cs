@@ -21,5 +21,21 @@ namespace JBC.Application.Services
         {
             return await _uow.Jobs.GetContractorReportAsync(startDate, endDate, combineNoPartner);
         }
+        public async Task<IEnumerable<JobSummaryPeriodReportDto>> GetJobSummaryReportAsync(DateOnly startDate, DateOnly endDate, string period)
+        {
+            return await _uow.Jobs.GetJobSummaryReportAsync(startDate, endDate, period);
+        }
+
+        public async Task<IEnumerable<CalendarChartDto>> GetJobsCalendarAsync()
+        {
+            return await _uow.Jobs.GetJobsCalendarAsync();
+        }
+
+        public async Task<IEnumerable<CalendarChartDto>> GetJobsCalendarAsync(int? vanId = null, int? contractorId = null, int? partnerId = null, int? jobTypeId = null)
+        {
+            return await _uow.Jobs.GetJobsCalendarAsync(vanId, contractorId, partnerId, jobTypeId);
+        }
+
+
     }
 }

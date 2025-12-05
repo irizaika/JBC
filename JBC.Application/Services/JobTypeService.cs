@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using JBC.Application.Interfaces.CrudInterfaces;
+﻿using JBC.Application.Interfaces.CrudInterfaces;
 using JBC.Application.Interfaces;
 using JBC.Domain.Dto;
 using JBC.Domain.Entities;
@@ -8,7 +7,7 @@ namespace JBC.Application.Services
 {
     public class JobTypeService : CrudService<JobTypeDto, JobType>, IJobTypeService
     {
-        public JobTypeService(IUnitOfWork uow, IMapper mapper)
+        public JobTypeService(IUnitOfWork uow, IMapper<JobType, JobTypeDto> mapper)
             : base(uow, mapper, uow.JobTypes)
         {
         }
